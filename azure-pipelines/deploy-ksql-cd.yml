@@ -1,0 +1,24 @@
+parameters:
+  - name: ksqlQueryFile
+    default: path/to/query.sql
+
+name: $(date:yyyyMMdd)$(rev:.r) - $(build.sourceBranch) - ${{ replace(replace(parameters.ksqlQueryFile,'/','_'),'\','_') }}
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: kafka-sharedTemplates
+      name: hn-gtsdevops/kafka-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+    - repository: common-sharedTemplates
+      name: hn-gtsdevops/common-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+extends: 
+  template: /extension/kafka/deploy-kafka-ksql.yml@kafka-sharedTemplates
+  parameters: 
+    ksqlQueryFile: ${{ parameters.ksqlQueryFile }}
